@@ -1,38 +1,45 @@
-import React, { useEffect } from "react";
+// src/App.js
+
+import React from "react";
+import {
+  useMsal,
+  AuthenticatedTemplate,
+  UnauthenticatedTemplate,
+} from "@azure/msal-react";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
   Navigate,
 } from "react-router-dom";
-import { useMsal, useIsAuthenticated } from "@azure/msal-react";
-import { loginRequest } from "./authConfig";
-import "./App.css";
-import Home from "./components/Home";
-import Profile from "./components/Profile";
+
+const Home = () => <h1>Home Page</h1>;
+const Profile = () => <h1>Profile Page</h1>;
 
 const App = () => {
-  const { instance, inProgress, accounts } = useMsal();
-  console.log("accounts: ", accounts);
-  const isAuthenticated = useIsAuthenticated();
-  console.log("isAuthenticated: ", isAuthenticated);
+  const { instance, accounts } = useMsal();
+  const isAuthenticated = accounts.length > 0;
 
-  useEffect(() => {
-    if (!isAuthenticated && inProgress === "none") {
-      instance.loginRedirect(loginRequest);
-    }
-  }, [instance, isAuthenticated, inProgress]);
+  const handleLogout = () => {
+    instance.logoutRedirect().catch((e) => console.error(e));
+  };
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route
-          path="/profile"
-          element={isAuthenticated ? <Profile /> : <Navigate to="/" />}
-        />
-      </Routes>
-    </Router>
+    <div>
+      <div>
+        {isAuthenticated && <button onClick={handleLogout}>Logout</button>}
+        <AuthenticatedTemplate>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </AuthenticatedTemplate>
+        <UnauthenticatedTemplate>
+          <h1>Please log in to access the app.</h1>
+        </UnauthenticatedTemplate>
+      </div>
+    </div>
   );
 };
 

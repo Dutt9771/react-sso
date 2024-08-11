@@ -1,6 +1,5 @@
 import React from "react";
 import { useMsal } from "@azure/msal-react";
-import { callMsGraph } from "../graph"; // Ensure this is correctly implemented
 import { loginRequest } from "../authConfig";
 import { useNavigate } from "react-router-dom";
 
@@ -11,16 +10,10 @@ const Profile = () => {
 
   React.useEffect(() => {
     if (accounts.length > 0) {
-      instance
-        .acquireTokenSilent({
-          ...loginRequest,
-          account: accounts[0],
-        })
-        .then((response) => {
-          callMsGraph(response.accessToken).then((data) =>
-            setProfileData(data)
-          );
-        });
+      instance.acquireTokenSilent({
+        ...loginRequest,
+        account: accounts[0],
+      });
     }
   }, [accounts, instance]);
   const logout = () => {

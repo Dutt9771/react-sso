@@ -1,18 +1,35 @@
+// src/index.js
+
 import React from "react";
 import ReactDOM from "react-dom";
+import { MsalProvider, useMsal } from "@azure/msal-react";
 import { PublicClientApplication } from "@azure/msal-browser";
-import { MsalProvider } from "@azure/msal-react";
-import { msalConfig } from "./authConfig";
+import { msalConfig, loginRequest } from "./authConfig";
 import App from "./App";
+import { BrowserRouter as Router, Navigate } from "react-router-dom";
 
-// Initialize MSAL instance
 const msalInstance = new PublicClientApplication(msalConfig);
 
+const AuthWrapper = () => {
+  const { instance, inProgress } = useMsal();
+
+  React.useEffect(() => {
+    if (inProgress === "none") {
+      const accounts = instance.getAllAccounts();
+      if (accounts.length === 0) {
+        instance.loginRedirect(loginRequest).catch((e) => console.error(e));
+      }
+    }
+  }, [instance, inProgress]);
+
+  return <App />;
+};
+
 ReactDOM.render(
-  <React.StrictMode>
-    <MsalProvider instance={msalInstance}>
-      <App />
-    </MsalProvider>
-  </React.StrictMode>,
+  <MsalProvider instance={msalInstance}>
+    <Router>
+      <AuthWrapper />
+    </Router>
+  </MsalProvider>,
   document.getElementById("root")
 );
