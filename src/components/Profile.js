@@ -36,7 +36,7 @@ const Profile = () => {
         <div>
           <h2>Welcome, {profileData.displayName}</h2>
           <p>Email: {profileData.userPrincipalName}</p>
-          <button onClick={() => navigate("/")}>back</button>
+          <button onClick={() => navigate("/medical")}>back</button>
           <button onClick={logout}>Logout</button>
         </div>
       ) : (

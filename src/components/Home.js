@@ -15,8 +15,8 @@ const Home = () => {
   return (
     <div>
       <h1>Home Page </h1>
-      <p>Welcome {accounts[0]?.name}</p>
-      <button onClick={() => navigate("/profile")}>Profile</button>
+      {/* <p>Welcome {accounts[0]?.name}</p> */}
+      <button onClick={() => navigate("/medical/profile")}>Profile</button>
       <button onClick={logout}>Signout</button>
     </div>
   );
