@@ -4,7 +4,6 @@ import {
   Route,
   Routes,
   Navigate,
-  Outlet,
 } from "react-router-dom";
 import { useMsal, useIsAuthenticated } from "@azure/msal-react";
 import { loginRequest } from "./authConfig";
@@ -13,16 +12,16 @@ import Home from "./components/Home";
 import Profile from "./components/Profile";
 
 const App = () => {
-  const { instance, inProgress, accounts } = useMsal();
-  console.log("accounts: ", accounts);
+  const { instance, inProgress } = useMsal();
   const isAuthenticated = useIsAuthenticated();
-  console.log("isAuthenticated: ", isAuthenticated);
 
   useEffect(() => {
+    console.log("inProgress: ", inProgress);
     if (!isAuthenticated && inProgress === "none") {
+      // Only trigger login if user is not authenticated and there is no ongoing login
       instance.loginRedirect(loginRequest);
     }
-  }, [instance, isAuthenticated, inProgress]);
+  }, [isAuthenticated, inProgress, instance]);
 
   return (
     <Router>
@@ -31,7 +30,6 @@ const App = () => {
 
         {/* Parent route */}
         <Route path="/medical">
-          {/* Child routes */}
           <Route index element={<Home />} /> {/* Renders Home on /medical */}
           <Route
             path="profile"
@@ -46,15 +44,5 @@ const App = () => {
     </Router>
   );
 };
-
-function MedicalLayout() {
-  return (
-    <div>
-      <h1>Medical Section</h1>
-      {/* The child routes will be rendered here */}
-      <Outlet />
-    </div>
-  );
-}
 
 export default App;
